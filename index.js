@@ -2,29 +2,18 @@
 
 document.addEventListener("DOMContentLoaded", ()=>{
   let allMonsters = []
+  let pageNumber = 1
   const monsterContainer = document.getElementById("monster-container")
   //const createForm = document.querySelector('#new-monster-form')
 
-    let pageNumber = 1
-    document.body.addEventListener ("click", (e) => {
-      // <button id="back"><=</button>
-      // <button id="forward">=></button>
-
-    })
-
-
-
-
-
-
 
     function fetchMonsters(){
-      fetch(`http://localhost:3000/monsters/?_limit=1&_page=${pageNumber}`)
+      fetch(`http://localhost:3000/monsters/?_limit=50&_page=${pageNumber}`)
       .then( function(response){
           return response.json()
       })
       .then((data) => {
-        console.log(data)
+        //console.log(data)
         allMonsters = data
         showAllMonsters(data)
 
@@ -41,6 +30,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
           <button>Create</button></form>
       `
     }
+
+    document.body.addEventListener ("click", (e) => {
+      console.log("here")
+      console.log(e.target)
+      if (e.target.id === "forward") {
+
+        pageNumber++
+        console.log(pageNumber)
+        fetchMonsters()
+      }
+      if (e.target.id === "back") {
+        pageNumber--
+        fetchMonsters()
+      }
+
+
+    })
 
     newMonsterForm()
 
