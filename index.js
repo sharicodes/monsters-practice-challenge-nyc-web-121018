@@ -5,8 +5,21 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const monsterContainer = document.getElementById("monster-container")
   //const createForm = document.querySelector('#new-monster-form')
 
+    let pageNumber = 1
+    document.body.addEventListener ("click", (e) => {
+      // <button id="back"><=</button>
+      // <button id="forward">=></button>
+
+    })
+
+
+
+
+
+
+
     function fetchMonsters(){
-      fetch(`http://localhost:3000/monsters/`)
+      fetch(`http://localhost:3000/monsters/?_limit=1&_page=${pageNumber}`)
       .then( function(response){
           return response.json()
       })
