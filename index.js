@@ -1,98 +1,76 @@
 
-
 document.addEventListener("DOMContentLoaded", ()=>{
-  let allMonsters = []
   let pageNumber = 1
-  const monsterContainer = document.getElementById("monster-container")
-  //const createForm = document.querySelector('#new-monster-form')
+const monsterContainer = document.querySelector("#monster-container")
+const monsterFormContainer= document.querySelector("#create-monster")
+const URL = "http://localhost:3000/monsters"
 
+fetch(`http://localhost:3000/monsters/?_limit=50&_page=${pageNumber}`)
+  .then(r => r.json())
+  .then(monsters => {
+    let monsterHTML = monsters.map(monster=>{
+    return `
+    <div>
+    <h2>${monster.name}</h2>
+    <h4>${monster.age}</h4>
+    <p>${monster.description}</p>
+    </div>`
+  })//end then
+    monsterContainer.innerHTML += monsterHTML.join('')
 
-    function fetchMonsters(){
-      fetch(`http://localhost:3000/monsters/?_limit=50&_page=${pageNumber}`)
-      .then( function(response){
-          return response.json()
-      })
-      .then((data) => {
-        //console.log(data)
-        allMonsters = data
-        showAllMonsters(data)
+})//end fetch
+//create a monsterForm
+//add a new monster
+function createNewMonsterForm(){
+  monsterFormContainer.innerHTML = `
+    <form id="monster-form">
+    <input id="name" placeholder="name...">
+    <form id="monster-form">
+    <input id="age" placeholder="age...">
+    <form id="monster-form">
+    <input id="description" placeholder="description...">
+    <button id="Create">Create</button>
+  `
+}//end createNewMonsterForm function
+createNewMonsterForm()
 
-      })
-    }
-    const monsterFormContainer = document.getElementById('create-monster')
+monsterFormContainer.addEventListener("submit", (e) => {
+  e.preventDefault()
+//console.log(e.target);
+    newMonsterName = document.getElementById('name').value
+    newMonsterAge = document.getElementById('age').value
+    newMonsterDescription = document.getElementById('description').value
+    //console.log(newMonsterName, newMonsterAge, newMonsterDescription);
 
-    function newMonsterForm(){
-      monsterFormContainer.innerHTML = `
-        <form id="monster-form">
-          <input id="name" placeholder="name...">
-          <input id="age" placeholder="age...">
-          <input id="description" placeholder="description...">
-          <button>Create</button></form>
-      `
-    }
-
-    document.body.addEventListener ("click", (e) => {
-      console.log("here")
-      console.log(e.target)
-      if (e.target.id === "forward") {
-
-        pageNumber++
-        console.log(pageNumber)
-        fetchMonsters()
-      }
-      if (e.target.id === "back") {
-        pageNumber--
-        fetchMonsters()
-      }
-
-
+  fetch(URL, {
+    method: "POST",
+    headers:{
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({
+      name: newMonsterName,
+      age:  newMonsterAge,
+      description: newMonsterDescription
     })
+  })//end of fetch
+  .then( r => r.json())
+  .then( newMonster => {
+    let newMonsterHTML = `
+    <div>
+    <h2>${newMonster.name}</h2>
+    <h4>${newMonster.age}</h4>
+    <p>${newMonster.description}</p>
+    </div>
+    `
 
-    newMonsterForm()
+    monsterContainer.innerHTML+= newMonsterHTML
+  })
 
-    const monsterForm = document.getElementById("monster-form")
-    monsterForm.addEventListener("submit", (e) => {
-      const newMonsterName = document.getElementById('name').value
-      const newMonsterAge = document.getElementById('age').value
-      const newMonsterDescription = document.getElementById('description').value
-      console.log(newMonsterName, newMonsterAge, newMonsterDescription)
-      e.preventDefault()
-      fetch("http://localhost:3000/monsters", {
-          method: "POST",
-          headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            name: newMonsterName,
-            age:  newMonsterAge,
-            description: newMonsterDescription
-          })
-      })
-      .then(function(response){
-        return response.json()
-      })
-      .then(function(monster){
-        allMonsters.push(monster)
-        monsterContainer.innerHTML += renderSingleMonster(monster)
-      })
-    })
-    fetchMonsters()
+})//end of eventlistener
 
-    function showAllMonsters(monsters){
-      monsterContainer.innerHTML = monsters.map(renderSingleMonster).join('')
-    }
 
-    function renderSingleMonster(monster){
-      return `
-        <div>
-          <h2>${monster.name}</h2>
-          <h4> Age:${monster.age}</h4>
-          <p> Bio:${monster.description}</p>
-    		</div>
-      		`
-      	}
+
 
 
 }) //DOM Content Loaded ends here
-//
